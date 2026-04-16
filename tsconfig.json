@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,  //  이 줄이 @type 에러를 해결하는 핵심입니다!
+    "emitDecoratorMetadata": true
+  }
+
+
+
+}

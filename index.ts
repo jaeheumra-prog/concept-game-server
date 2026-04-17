@@ -2,19 +2,28 @@ import { Server, Room, Client } from "colyseus";
 import { Schema, type, MapSchema } from "@colyseus/schema";
 import http from "http";
 
+/**
+ * 💡 플레이어 데이터 구조
+ */
 class Player extends Schema {
   @type("number") x: number = 400; 
   @type("number") y: number = 300; 
   @type("string") character: string = "";
 }
 
+/**
+ * 💡 게임 상태 관리
+ */
 class GameState extends Schema {
   @type({ map: Player }) players = new MapSchema<Player>();
 }
 
+/**
+ * 💡 방 로직 (조별 분리 포함)
+ */
 class GameRoom extends Room<GameState> {
   onCreate(options: any) { 
-    this.maxClients = 4; // 한 조에 4명씩
+    this.maxClients = 4; 
     this.setState(new GameState()); 
     console.log(`✅ ${options.group}모둠 방 생성됨`); 
 
@@ -42,10 +51,29 @@ class GameRoom extends Room<GameState> {
   }
 }
 
-const gameServer = new Server({ server: http.createServer() });
+/**
+ * 🚀 [Render 최적화] HTTP 서버 생성 및 Health Check
+ */
+const httpServer = http.createServer((req, res) => {
+  // Render가 서버 살아있는지 확인할 때 대답해주는 로직
+  res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("서버 작동 중 - Team HIGH five");
+});
 
-// 💡 filterBy(['group'])가 핵심입니다. 이 설정 덕분에 조별로 방이 나뉩니다.
+const gameServer = new Server({
+  server: httpServer
+});
+
+// 조별 방 분리 필터
 gameServer.define('my_room', GameRoom).filterBy(['group']);
 
-gameServer.listen(2567);
-console.log("🚀 서버 대기 중: ws://localhost:2567");
+/**
+ * 🚀 포트 설정 및 서버 시작
+ */
+const port = Number(process.env.PORT) || 2567;
+
+gameServer.listen(port, "0.0.0.0").then(() => {
+  console.log(`✅ 서버가 성공적으로 열렸습니다: 포트 ${port}`);
+}).catch((err) => {
+  console.error("❌ 서버 시작 에러:", err);
+});

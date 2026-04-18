@@ -59,11 +59,14 @@ class GameRoom extends Room<GameState> {
         const tempX = caster.x;
         const tempY = caster.y;
         
+        if(target){
         caster.x = target.x;
         caster.y = target.y;
         
         target.x = tempX;
         target.y = tempY;
+
+        }
 
         console.log(`[Skill] ${client.sessionId} swapped with ${targetId}`);
       }

@@ -21,7 +21,16 @@ class GameRoom extends Room<GameState> {
   onCreate(options: any) { 
     this.setState(new GameState()); 
 
-    // 이동 처리
+    // 이동 처리 (클라이언트 물리엔진 좌표 연동)
+    this.onMessage("movePos", (client, data) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) {
+         player.x = data.x;
+         player.y = data.y;
+      }
+    });
+
+    // 기존 이동 처리 로직 (호환성을 위해 남겨둠)
     this.onMessage("move", (client, data) => {
       const player = this.state.players.get(client.sessionId);
       if (player) {

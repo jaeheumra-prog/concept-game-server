@@ -7,6 +7,8 @@ class Player extends Schema {
   @type("number") y: number = 300; 
   @type("string") character: string = "";
   @type("string") job: string = "";
+  @type("string") group: string = "";
+  @type("string") realName: string = "";
   @type("number") vision: number = 150; 
 }
 
@@ -85,6 +87,8 @@ class GameRoom extends Room<GameState> {
     const newPlayer = new Player();
     newPlayer.character = options.character || "test_buddy1";
     newPlayer.job = options.job || "분석자";
+    newPlayer.group = options.group || "";
+    newPlayer.realName = options.realName || "";
     newPlayer.vision = (newPlayer.character === "test_buddy3") ? 350 : 150;
     this.state.players.set(client.sessionId, newPlayer);
   }

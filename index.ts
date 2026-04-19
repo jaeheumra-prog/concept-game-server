@@ -46,8 +46,8 @@ class GameRoom extends Room<GameState> {
     this.onMessage("useSkill", (client) => {
       const caster = this.state.players.get(client.sessionId);
       
-      // 조율자(test_buddy4)만 사용 가능 여부 서버에서 재확인
-      if (!caster || caster.character !== "test_buddy4") return;
+      // 조율자 키워드가 들어있는 직업만 사용 가능
+      if (!caster || !caster.job.includes("조율자")) return;
 
       let targetId: string | null = null;
       let minDistance = Infinity;
@@ -83,6 +83,29 @@ class GameRoom extends Room<GameState> {
       }
     });
 
+    // 💡 분석자 스킬: 힌트 보기 (데이터 전송)
+    this.onMessage("useAnalystSkill", (client) => {
+      const caster = this.state.players.get(client.sessionId);
+      if (!caster || !caster.job.includes("분석자")) return;
+      
+      // 룸 내 모든 팀원에게 힌트 메시지 발송
+      this.broadcast("showHint", { 
+        message: "분석가가 맵의 숨겨진 장치를 찾아냈습니다! 주변의 느낌표 아이템을 확보하세요.",
+        sender: caster.realName
+      }, { afterNextPatch: true });
+    });
+
+    // 💡 개척자 스킬: 이동 속도 버프 알림
+    this.onMessage("useExplorerSkill", (client) => {
+      const caster = this.state.players.get(client.sessionId);
+      if (!caster || !caster.job.includes("개척자")) return;
+      this.broadcast("skillUsed", { 
+        job: "개척자", 
+        name: caster.realName, 
+        skill: "가속" 
+      });
+    });
+
     this.onMessage("collectItem", (client) => {
       this.state.itemsCollected += 1;
       if (this.state.itemsCollected >= 5) {
@@ -98,7 +121,10 @@ class GameRoom extends Room<GameState> {
     newPlayer.job = options.job || "분석자";
     newPlayer.group = options.group || "";
     newPlayer.realName = options.realName || "";
-    newPlayer.vision = (newPlayer.character === "test_buddy3") ? 350 : 150;
+    
+    // 길잡이 직업군은 시야가 2배 이상 넓음
+    newPlayer.vision = (newPlayer.job.includes("길잡이")) ? 350 : 150;
+    
     this.state.players.set(client.sessionId, newPlayer);
   }
 

@@ -226,3 +226,94 @@ if (action === "revealPath") {
     }
 }
 */
+
+/*
+// 🌟 MyRoom.ts - this.onMessage("interact", ...) 내부 조건문에 추가
+
+if (action === "openTwoStepSafe") {
+    const reqId = message.reqId; // 예: "r11_rock" (선행 파괴되어야 할 암석 ID)
+
+    // 1. 선행 조건(암석)이 이미 파괴(opened)되었는지 검사
+    if (this.state.mapStatus.get(reqId) === "opened") {
+        
+        // 2. 금고가 아직 열리지 않았다면 금고 해제
+        if (this.state.mapStatus.get(targetId) !== "opened") {
+            this.state.mapStatus.set(targetId, "opened");
+            
+            // 기획안에 따라 특정 아이템 인벤토리 지급 (예: 거울)
+            player.inventory.push("거울");
+            
+            this.broadcast("pathOpened", { id: targetId, type: "safe", by: player.realName });
+            this.broadcast("serverMessage", `🔓 [${player.realName}]님이 암석 속 금고를 해제해 [거울]을 얻었습니다!`);
+        }
+    } 
+    // 3. 암석이 아직 파괴되지 않았다면 실패 메시지 전송
+    else {
+        client.send("serverMessage", "🪨 암석에 파묻혀 금고를 열 수 없습니다. 개척자의 도움이 필요합니다!");
+    }
+}
+*/
+
+
+/*
+
+// 🌟 MyRoom.ts - onCreate() 내부에 행동 추적 로직 추가
+
+// 1. 이동 거리 추적 (적극성 파악)
+this.onMessage("movePos", (client, message) => {
+    const player = this.state.players.get(client.sessionId);
+    if (player) {
+        // 이전 좌표와 현재 좌표의 거리를 계산하여 누적
+        const dist = Math.hypot(player.x - message.x, player.y - message.y);
+        player.stats.distance += dist;
+        
+        player.x = message.x; 
+        player.y = message.y;
+    }
+});
+
+// 2. 상호작용 및 협동 점수 추적 (this.onMessage("interact") 내부)
+this.onMessage("interact", (client, message) => {
+    const player = this.state.players.get(client.sessionId);
+    if (!player) return;
+
+    // 기본 상호작용 횟수 증가
+    player.stats.interactions += 1;
+
+    // 협동 기믹(방 5 금고, 방 10 중량문 등) 성공 시 협동 점수(coopScore) 대폭 증가
+    if (message.action === "openDualDoor" || message.action === "openSafe") {
+        player.stats.coopScore += 20; 
+    }
+    
+    // ... (기존 상호작용 로직 유지) ...
+});
+
+// 3. 스킬 사용 추적 (조율자 텔레포트, 분석가 힌트 등)
+this.onMessage("useSkill", (client) => {
+    const player = this.state.players.get(client.sessionId);
+    if (player) player.stats.skillUses += 1;
+});
+this.onMessage("coordinatorTeleport", (client, message) => {
+    const player = this.state.players.get(client.sessionId);
+    if (player) {
+        player.stats.skillUses += 1;
+        player.stats.coopScore += 15; // 남을 이동시켜주는 이타적 행위
+    }
+    // ... (기존 텔레포트 로직 유지) ...
+});
+
+// 4. 전투 기여도 추적 (this.onMessage("attackBoss") 내부)
+this.onMessage("attackBoss", (client, message) => {
+    const player = this.state.players.get(client.sessionId);
+    // ... (거리 검사 로직 등 유지) ...
+    
+    let damage = 10 * (message.attackPower || 1);
+    if (this.state.boss.status === "weak") damage *= 2;
+
+    // 보스에게 입힌 총 데미지 기록
+    if (player) player.stats.bossDamage += damage; 
+
+    // ... (기존 보스 체력 깎기 로직 유지) ...
+});
+
+*/

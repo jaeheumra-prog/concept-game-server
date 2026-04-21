@@ -1,20 +1,9 @@
 {
-  "name": "server",
-  "version": "1.0.0",
+  "name": "team-chat-room-server-entry",
   "private": true,
+  "version": "1.0.0",
   "scripts": {
-    "start": "ts-node index.ts", 
-    "dev": "ts-node-dev index.ts"
-  },
-  "dependencies": {
-    "colyseus": "0.14.23",
-    "@colyseus/schema": "1.0.34",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.0.0",
-    "http": "^0.0.1-security"
-  },
-  "devDependencies": {
-    "ts-node-dev": "^2.0.0",
-    "@types/node": "^18.0.0"
+    "start": "node ../local-dev-server.js",
+    "dev": "node ../local-dev-server.js"
   }
 }

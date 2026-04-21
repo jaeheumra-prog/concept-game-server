@@ -1,4 +1,7 @@
-node_modules/
-dist/
-.env
-*.log
+# LEGACY PROJECT COMMENTED OUT FOR NEW PROJECT START
+# Original file: server\.gitignore
+# node_modules/
+# dist/
+# .env
+# *.log
+# LEGACY PROJECT COMMENTED OUT END
